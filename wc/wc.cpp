@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <vector>
 #include <list>
+#include <utility>
+#include <algorithm>
 
 using namespace std;
 
@@ -30,10 +32,22 @@ void tokenize(const string& str,
     }
 }
 
-void words_into_map(map <string,int>, vector<string> words){
-	cout << "inserting all of the words from the last line into a map" << endl;
-	//now we need to actually do this inserting instead of just saying we're doing it
+void insert(map <string,int> & m, string str){
+	if (m.find(str) != m.end()){
+		m[str]++;
+	}
+	else{
+		m[str] = 1;
+	}
 }
+
+void words_into_map(map <string,int> & m, vector<string> & words){
+	for(vector<string>::iterator w = words.begin(); w != words.end(); w++){
+		insert(m, *w);
+	}
+}
+
+bool cmp (pair <string, int> a,pair <string, int> b) { return (a.second > b.second); }
 
 int main(int argc, char* argv[]){
 	fstream f (argv[1]);
@@ -42,12 +56,22 @@ int main(int argc, char* argv[]){
 	string line;
 	vector<string> words;
 	if (f.is_open()){
-		cout << "opening the file " << argv[1] << " and finding the " << n << " most common words" << endl;
 		while (! f.eof()){
 			getline(f,line);
 			tokenize(line, words, " \t");
 			words_into_map(m, words);
+			words.clear();
 		}
+		vector< pair <string,int> > pairs;
+		for(map<string,int>::iterator i = m.begin(); i != m.end(); i++){
+			pairs.push_back(*i);
+		}
+		std::sort (pairs.begin(), pairs.end(), cmp);
+		int i;
+		for (i = 0; (i < n) && (i < pairs.size()); i++){
+			cout << pairs.at(i).first << ": " << pairs.at(i).second << endl;
+		}
+		sort(pairs.begin(), pairs.end());
 		return 0;
 	}
 	else{
