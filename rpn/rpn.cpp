@@ -64,9 +64,8 @@ void evaluate(vector<string> &tokens, stack <int> &s){
 	for (vector<string>::iterator p=tokens.begin(); p!=tokens.end(); ++p){
 		if (number(*p)){
 			add_number(*p, s);
-			return;
 		}
-		if ( (*p) == "+" || (*p) == "-" || (*p) == "*" || (*p) == "/" ){
+		else if ( (*p) == "+" || (*p) == "-" || (*p) == "*" || (*p) == "/" ){
 			if (s.size() < 2){
 				cout << "not enough numbers on the stack, clearing stack." << endl;
 				const size_t stack_size = s.size();
@@ -74,12 +73,14 @@ void evaluate(vector<string> &tokens, stack <int> &s){
 				for (i = 0; i < stack_size; i++){
 					s.pop();
 				}
-				return;
 			}
-			do_op(*p,s);
-			return;
+			else{
+				do_op(*p,s);
+			}
 		}
-		cout << "neither a number nor an operator" << endl;		
+		else{
+			cout << "neither a number nor an operator" << endl;	
+		}	
 	}
 }
 
@@ -111,6 +112,7 @@ int main(int argc, char* argv[]){
 	string line;
 	while (true){
 		getline(cin,line);
+		//cout << "the line is: " << line << endl;
 		tokenize(line, tokens, " \t");
 		evaluate(tokens, stk);
 		tokens.erase(tokens.begin(),tokens.end());
